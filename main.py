@@ -1,7 +1,4 @@
-from flask import Flask, Response
 import os
-
-app = Flask(__name__)
 
 def conjetura_de_collatz(n):
     while n != 1:
@@ -17,26 +14,22 @@ def generador_numeros_positivos():
         yield numero
         numero += 1
 
-@app.route('/')
-def index():
-    generador = generador_numeros_positivos()
-    contador = 0
-    lineas_por_pantalla = 1000
-    
-    def generar_datos():
-        nonlocal contador
-        while True:
-            n = next(generador)
-            resultado = conjetura_de_collatz(n)
-            yield f"Resultado de {n} es: {resultado}\n"
-            
-            contador += 1
-            if contador >= lineas_por_pantalla:
-                contador = 0
-            if resultado != 1:
-                break
+def limpiar_pantalla():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
-    return Response(generar_datos(), content_type='text/plain;charset=utf-8')
+generador = generador_numeros_positivos()
+contador = 0
+lineas_por_pantalla = 1000  # Configura el número de líneas a mostrar antes de limpiar la pantalla
 
-if __name__ == '__main__':
-    app.run(debug=True)
+while True:
+    n = next(generador)
+    resultado = conjetura_de_collatz(n)
+    print(f"Resultado de {n} es: {resultado}")
+
+    contador += 1
+    if contador >= lineas_por_pantalla:
+        limpiar_pantalla()
+        contador = 0
+
+    if resultado != 1:
+        break
